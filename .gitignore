@@ -1,0 +1,9 @@
+.phpunit.result.cache
+.php-cs-fixer.cache
+.composer-lock
+/vendor
+/public/main.css
+/public/main.js
+**/.idea
+!**/.gitignore
+/.phpunit.cache

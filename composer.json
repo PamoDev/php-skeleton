@@ -1,0 +1,53 @@
+{
+  "name": "pamo/compage",
+  "description": "Docker PHP Project Skeleton",
+  "version": "0.0.0",
+  "authors": [
+    {
+      "name": "Patrick Möller",
+      "email": "info@pamo.dev",
+      "homepage": "https://pamo.dev",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "functions.php",
+      "constants.php"
+    ],
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.4",
+    "ext-pdo": "*",
+    "ext-intl": "*",
+    "psr/container": "^2.0",
+    "psr/http-message": "^1.0",
+    "psr/log": "*",
+    "psr/link": "^2.0",
+    "psr/event-dispatcher": "^1.0",
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^7.0.6",
+    "phpunit/phpunit": "^11.1.1",
+    "phpstan/phpstan": "^1.10",
+    "squizlabs/php_codesniffer": "4.0.x-dev",
+    "friendsofphp/php-cs-fixer": "v3.54.0",
+    "bnf/phpstan-psr-container": "^1.0.1"
+  },
+  "scripts": {
+    "test": [
+      "@phpcs"
+    ],
+    "phpunit": "phpunit",
+    "phpunit debug": "phpunit --debug -d display_startup_errors=on -d error_reporting=22527",
+    "phpunit-upgrade-config": "phpunit --debug --migrate-configuration",
+    "phpunit-coverage": "phpunit --coverage-html etc/logs/xdebug_coverage --configuration ./phpunit.xml",
+    "phpcs": "phpcs . -v --standard=PSR2,PSR12 --ignore=\"*/public/*,*/vendor/*,*/doc/*,*/config/*,*/etc/*,*.js,*.css,*.html\" --exclude=Generic.Files.LineLength",
+    "phpcbf": "phpcbf --standard=PSR12 --ignore=\"*/public/*,*/vendor/*,*/doc/*,*/config/*,*/etc/*,*.js,*.css,*.html\" --exclude=Generic.Files.LineLength ."
+  }
+}

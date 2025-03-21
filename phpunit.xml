@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.1/phpunit.xsd" backupGlobals="true"
+         bootstrap="tests/bootstrap.php" cacheDirectory="etc/temp/cache/.phpunit.cache" requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true" cacheResultFile="etc/.phpunit.result.cache">
+    <testsuites>
+        <testsuite name="Tests">
+            <directory suffix="Test.php">tests/</directory>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <junit outputFile="./etc/logs/phpunit.junit.xml"/>
+        <teamcity outputFile="./etc/logs/phpunit.teamcity.txt"/>
+        <testdoxHtml outputFile="./etc/logs/phpunit.testdox.html"/>
+        <testdoxText outputFile="./etc/logs/phpunit.testdox.txt"/>
+    </logging>
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
+</phpunit>

@@ -1,0 +1,41 @@
+# Dockerfile für PHP (docker-compose)
+FROM php:8.4-fpm
+
+# Custom Ini
+COPY /etc/php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Install git,openssl (the php image doesn't have it) which is required by composer
+RUN apt-get update -yqq
+RUN apt-get install wget git libxml2-dev libpcre3-dev libcurl4-openssl-dev -yqq
+
+# Install phpunit, composer
+RUN curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-12.0.9.phar
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN chmod +x /usr/local/bin/phpunit
+RUN chmod +x /usr/local/bin/composer
+
+# Abhängigkeiten für Standard PHP Extensions
+RUN apt-get install -y libzip-dev zip libicu-dev g++ libpng-dev libjpeg-dev libmagickwand-dev
+RUN docker-php-ext-configure zip
+RUN docker-php-ext-configure gd --with-jpeg
+RUN docker-php-ext-install zip intl gd pdo pdo_mysql bcmath gd soap fileinfo intl
+
+# imagick
+RUN pecl install imagick
+RUN docker-php-ext-enable imagick
+
+# XDebug for Code Coverage
+RUN pecl install xdebug
+RUN docker-php-ext-enable xdebug
+
+# files // & composer install
+COPY . /app
+RUN mkdir -p /app/public
+RUN echo "<?php phpinfo(); ?>" > /app/public/index.php
+WORKDIR /app
+
+
+# Rechte
+RUN chown www-data:www-data public -R
+RUN chown www-data:www-data etc/ -R
+RUN chmod 775 etc/logs

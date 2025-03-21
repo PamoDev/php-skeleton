@@ -1,0 +1,54 @@
+# Dockerfile für PHP (docker-compose)
+FROM php:8.4-fpm-alpine
+
+# ARGS/ENV
+ENV MAGICK_HOME=/usr
+
+# Custom Ini
+COPY etc/php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Install git, package-deps 
+RUN apk update -yqq
+RUN apk add --no-cache git g++ make autoconf libxml2-dev pcre libcurl openssl libzip-dev icu-dev imagemagick imagemagick-dev libpng-dev jpeg-dev
+RUN apk add --no-cache --update linux-headers
+
+# Install phpunit, composer
+RUN curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-13.0.9.phar
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN chmod +x /usr/local/bin/phpunit
+RUN chmod +x /usr/local/bin/composer
+
+# Abhängigkeiten für Standard PHP Extensions
+RUN docker-php-ext-configure zip
+RUN docker-php-ext-configure gd --with-jpeg
+RUN docker-php-ext-install zip intl gd pdo pdo_mysql bcmath gd soap fileinfo intl
+
+# imagick
+#RUN pecl install imagick
+RUN pecl download imagick \
+    && tar -xzf imagick-*.tgz \
+    && cd imagick-* \
+    && phpize \
+    && ./configure CPPFLAGS='-Dphp_strtolower=zend_str_tolower' \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf imagick-*
+RUN docker-php-ext-enable imagick
+
+# XDebug for Code Coverage
+RUN pecl install xdebug
+RUN docker-php-ext-enable xdebug
+
+# project files & composer install
+COPY . /app 
+WORKDIR /app
+RUN mkdir -p /app/public
+RUN mkdir -p /app/etc/logs
+
+# Permissions
+RUN chown www-data:www-data public -R
+RUN chown www-data:www-data etc/ -R
+RUN chmod 775 etc/logs
+
+
