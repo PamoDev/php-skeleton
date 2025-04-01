@@ -22,10 +22,10 @@
   },
   "require-dev": {
     "symfony/var-dumper": "^7.2.3",
-    "phpunit/phpunit": "^12.0.*",
-    "phpstan/phpstan": "^2.0.*",
-    "squizlabs/php_codesniffer": "^4.0.*",
-    "friendsofphp/php-cs-fixer": "@latest",
+    "phpunit/phpunit": "^12.0.10",
+    "phpstan/phpstan": "^2.1.11",
+    "squizlabs/php_codesniffer": "4.0.*-dev",
+    "friendsofphp/php-cs-fixer": "dev-master",
     "bnf/phpstan-psr-container": "^1.0.1"
   },
   "scripts": {
