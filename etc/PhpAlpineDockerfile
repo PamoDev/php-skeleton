@@ -45,10 +45,11 @@ COPY . /app
 WORKDIR /app
 RUN mkdir -p /app/public
 RUN mkdir -p /app/etc/logs
+RUN touch /app/etc/logs/xdebug.log
 
 # Permissions
 RUN chown www-data:www-data public -R
-RUN chown www-data:www-data etc/ -R
+RUN chown www-data:www-data etc/logs -R
 RUN chmod 775 etc/logs
 
 

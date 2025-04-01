@@ -9,13 +9,13 @@ RUN apt-get update -yqq
 RUN apt-get install wget git libxml2-dev libpcre3-dev libcurl4-openssl-dev -yqq
 
 # Install phpunit, composer
-RUN curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-12.0.9.phar
+RUN curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-12.0.10.phar
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN chmod +x /usr/local/bin/phpunit
 RUN chmod +x /usr/local/bin/composer
 
 # Abhängigkeiten für Standard PHP Extensions
-RUN apt-get install -y libzip-dev zip libicu-dev g++ libpng-dev libjpeg-dev libmagickwand-dev
+RUN apt-get install -y libzip-dev zip libicu-dev g++ libpng-dev libjpeg-dev  libmagickwand-dev
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-configure gd --with-jpeg
 RUN docker-php-ext-install zip intl gd pdo pdo_mysql bcmath gd soap fileinfo intl
@@ -28,14 +28,16 @@ RUN docker-php-ext-enable imagick
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
 
-# files // & composer install
+# files
 COPY . /app
-RUN mkdir -p /app/public
-RUN echo "<?php phpinfo(); ?>" > /app/public/index.php
 WORKDIR /app
 
+# xdebug log file, see php.ini
+RUN mkdir -p /app/etc/logs
+RUN touch /app/etc/logs/xdebug.log
+WORKDIR /app
 
 # Rechte
 RUN chown www-data:www-data public -R
-RUN chown www-data:www-data etc/ -R
+RUN chown www-data:www-data etc/logs -R
 RUN chmod 775 etc/logs

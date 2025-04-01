@@ -1,2 +1,1 @@
-docker build -t pamodev/php-fpm-alpine:dev -f etc/PhpAlpineDockerfile .
-docker build -t pamodev/php-fpm-alpine:latest -f etc/PhpAlpineDockerfile .
+docker build -t pamodev/php-fpm-alpine:dev -t pamodev/php-fpm-alpine:latest -t pamodev/php-fpm-alpine:8.4 -f etc/PhpAlpineDockerfile .
