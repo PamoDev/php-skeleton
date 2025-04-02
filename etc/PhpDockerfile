@@ -1,6 +1,9 @@
 # Dockerfile für PHP (docker-compose)
 FROM php:8.4-fpm
 
+# ARGS/ENV
+ENV PHP_CS_FIXER_IGNORE_ENV=1
+
 # Custom Ini
 COPY /etc/php.ini /usr/local/etc/php/conf.d/custom.ini
 
@@ -29,11 +32,6 @@ RUN docker-php-ext-enable xdebug
 # files
 COPY . /app
 WORKDIR /app
-
-# xdebug log file, see php.ini
-RUN mkdir -p /app/etc/logs
-RUN chown www-data:www-data /app/etc/logs
-RUN chmod 775 /app/etc/logs
 
 # Composer Base, for Tooling
 RUN composer install

@@ -3,6 +3,7 @@ FROM php:8.4-fpm-alpine
 
 # ARGS/ENV
 ENV MAGICK_HOME=/usr
+ENV PHP_CS_FIXER_IGNORE_ENV=1
 
 # Custom Ini
 COPY etc/php.ini /usr/local/etc/php/conf.d/custom.ini
@@ -13,9 +14,7 @@ RUN apk add --no-cache git g++ make autoconf libxml2-dev pcre libcurl openssl li
 RUN apk add --no-cache --update linux-headers
 
 # Install phpunit, composer
-RUN curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-13.0.9.phar
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN chmod +x /usr/local/bin/phpunit
 RUN chmod +x /usr/local/bin/composer
 
 # Abhängigkeiten für Standard PHP Extensions
@@ -40,16 +39,14 @@ RUN docker-php-ext-enable imagick
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
 
-# project files & composer install
+# project files
 COPY . /app 
 WORKDIR /app
-RUN mkdir -p /app/public
-RUN mkdir -p /app/etc/logs
-RUN touch /app/etc/logs/xdebug.log
 
-# Permissions
-RUN chown www-data:www-data public -R
-RUN chown www-data:www-data etc/logs -R
-RUN chmod 775 etc/logs
+# Composer Base, for Tooling
+RUN composer install
+RUN rm composer.lock
 
+# Add Composer bin dir to path, so we can call all the tools directly via docker exec/run
+ENV PATH="$PATH:/app/vendor/bin"
 
