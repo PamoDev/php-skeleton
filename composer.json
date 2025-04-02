@@ -21,7 +21,6 @@
     "ext-intl": "*"
   },
   "require-dev": {
-    "symfony/var-dumper": "^7.2.3",
     "phpunit/phpunit": "^12.0.10",
     "phpstan/phpstan": "^2.1.11",
     "squizlabs/php_codesniffer": "4.0.*-dev",

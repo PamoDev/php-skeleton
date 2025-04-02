@@ -8,10 +8,8 @@ COPY /etc/php.ini /usr/local/etc/php/conf.d/custom.ini
 RUN apt-get update -yqq
 RUN apt-get install wget git libxml2-dev libpcre3-dev libcurl4-openssl-dev -yqq
 
-# Install phpunit, composer
-RUN curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-12.0.10.phar
+# composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN chmod +x /usr/local/bin/phpunit
 RUN chmod +x /usr/local/bin/composer
 
 # Abhängigkeiten für Standard PHP Extensions
@@ -34,10 +32,13 @@ WORKDIR /app
 
 # xdebug log file, see php.ini
 RUN mkdir -p /app/etc/logs
-RUN touch /app/etc/logs/xdebug.log
-WORKDIR /app
+RUN chown www-data:www-data /app/etc/logs
+RUN chmod 775 /app/etc/logs
 
-# Rechte
-RUN chown www-data:www-data public -R
-RUN chown www-data:www-data etc/logs -R
-RUN chmod 775 etc/logs
+# Composer Base, for Tooling
+RUN composer install
+RUN rm composer.lock
+
+# Add Composer bin dir to path, so we can call all the tools directly via docker exec/run
+ENV PATH="$PATH:/app/vendor/bin"
+

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.1/phpunit.xsd" backupGlobals="true"
-         bootstrap="tests/bootstrap.php" cacheDirectory="etc/temp/cache/.phpunit.cache" requireCoverageMetadata="true"
-         beStrictAboutCoverageMetadata="true" cacheResultFile="etc/.phpunit.result.cache">
+         bootstrap="tests/bootstrap.php" requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true">
     <testsuites>
         <testsuite name="Tests">
             <directory suffix="Test.php">tests/</directory>

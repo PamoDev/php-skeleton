@@ -1,4 +1,3 @@
-vendor
-node_modules
-COMMIT.txt
-*.bak
+vendor/
+node_modules/
+composer.lock

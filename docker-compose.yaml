@@ -1,0 +1,29 @@
+services:
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./etc/NginxDockerfile
+    networks:
+      - application-net
+    links:
+      - php-fpm:php
+    volumes:
+      - ./etc/nginx.conf:/etc/nginx/conf.d/default.conf
+      - .:/app
+    ports:
+      - 8080:80 #bind:to
+  php-fpm:
+    build:
+      context: ./
+      dockerfile: ./etc/PhpDockerfile
+    restart: always
+    networks:
+      - application-net
+    volumes:
+      - ./etc/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - .:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # for xdebug
+networks:
+  application-net:
+    driver: bridge
