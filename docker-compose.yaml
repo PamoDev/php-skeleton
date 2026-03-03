@@ -15,7 +15,7 @@ services:
   php-fpm:
     build:
       context: ./
-      dockerfile: ./etc/PhpDockerfile
+      dockerfile: ./etc/PhpAlpineDockerfile
     restart: always
     networks:
       - application-net

@@ -4,27 +4,33 @@ FROM php:8.4-fpm-alpine
 # ARGS/ENV
 ENV MAGICK_HOME=/usr
 ENV PHP_CS_FIXER_IGNORE_ENV=1
+ENV PATH="$PATH:/app/vendor/bin"
 
 # Custom Ini
 COPY etc/php.ini /usr/local/etc/php/conf.d/custom.ini
 
-# Install git, package-deps 
-RUN apk update -yqq
-RUN apk add --no-cache git g++ make autoconf libxml2-dev pcre libcurl openssl libzip-dev icu-dev imagemagick imagemagick-dev libpng-dev jpeg-dev
-RUN apk add --no-cache --update linux-headers
+#Deps
+RUN apk add --no-cache \
+    git \
+    icu-libs \
+    imagemagick \
+    libpng \
+    libjpeg-turbo \
+    libzip \
+    libxml2 \
+    libcurl \
+    openssl
 
-# Install phpunit, composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN chmod +x /usr/local/bin/composer
+# Yoink Composer from the Composer Image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Abhängigkeiten für Standard PHP Extensions
-RUN docker-php-ext-configure zip
-RUN docker-php-ext-configure gd --with-jpeg
-RUN docker-php-ext-install zip intl gd pdo pdo_mysql bcmath gd soap fileinfo intl
-
-# imagick
-#RUN pecl install imagick
-RUN pecl download imagick \
+RUN chmod +x /usr/bin/composer \
+    && apk add --no-cache --virtual .build-deps \
+       g++ make autoconf linux-headers icu-dev imagemagick-dev libpng-dev jpeg-dev libzip-dev libxml2-dev \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-configure gd --with-jpeg \
+    && docker-php-ext-install zip intl gd pdo pdo_mysql bcmath gd soap fileinfo intl\
+    && pecl download imagick \
     && tar -xzf imagick-*.tgz \
     && cd imagick-* \
     && phpize \
@@ -32,21 +38,16 @@ RUN pecl download imagick \
     && make -j$(nproc) \
     && make install \
     && cd .. \
-    && rm -rf imagick-*
-RUN docker-php-ext-enable imagick
-
-# XDebug for Code Coverage
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
+    && rm -rf imagick-* \
+    && docker-php-ext-enable imagick \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del .build-deps
 
 # project files
-COPY . /app 
 WORKDIR /app
 
 # Composer Base, for Tooling
-RUN composer install
-RUN rm composer.lock
-
-# Add Composer bin dir to path, so we can call all the tools directly via docker exec/run
-ENV PATH="$PATH:/app/vendor/bin"
-
+COPY composer.json composer.lock* /app/
+RUN composer install --no-interaction --optimize-autoloader
+COPY . /app
