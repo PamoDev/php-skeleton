@@ -1,0 +1,17 @@
+stages:
+  - build
+
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - cd $CI_PROJECT_DIR
+
+build:container:
+  stage: build
+  image: docker:24.0.5
+  tags:
+    - docker
+  script:
+    - docker compose build #poor-mans registry on the same machine, add external registry later on
