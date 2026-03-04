@@ -13,6 +13,7 @@ services:
     ports:
       - 8080:80 #bind:to
   php-fpm:
+    container_name: base
     build:
       context: ./
       dockerfile: ./etc/PhpAlpineDockerfile
