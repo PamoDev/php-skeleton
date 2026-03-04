@@ -13,6 +13,7 @@ services:
     ports:
       - 8080:80 #bind:to
   php-fpm:
+    image: compage/base
     build:
       context: ./
       dockerfile: ./etc/PhpAlpineDockerfile
