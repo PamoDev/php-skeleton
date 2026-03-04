@@ -17,7 +17,6 @@ services:
     build:
       context: ./
       dockerfile: ./etc/PhpAlpineDockerfile
-    restart: always
     networks:
       - application-net
     volumes:
