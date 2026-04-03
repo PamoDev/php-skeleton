@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.1/phpunit.xsd" backupGlobals="true"
-         bootstrap="tests/bootstrap.php" requireCoverageMetadata="true"
-         beStrictAboutCoverageMetadata="true">
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd" backupGlobals="true"
+         bootstrap="tests/bootstrap.php" cacheDirectory="etc/temp/cache/.phpunit.cache" requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnPhpunitNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
-        <testsuite name="Tests">
+        <testsuite name="Src">
             <directory suffix="Test.php">tests/</directory>
         </testsuite>
     </testsuites>
@@ -18,5 +21,8 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <directory>tests</directory>
+        </exclude>
     </source>
 </phpunit>

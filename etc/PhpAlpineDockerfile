@@ -1,15 +1,15 @@
 # Dockerfile für PHP (docker-compose)
-FROM php:8.4-fpm-alpine
+FROM php:8.4-fpm-alpine AS base
 
 # ARGS/ENV
 ENV MAGICK_HOME=/usr
 ENV PHP_CS_FIXER_IGNORE_ENV=1
 ENV PATH="$PATH:/app/vendor/bin"
 
-# Custom Ini
+# Custom Ini (Basis: Prod-optimiert, logs via stderr)
 COPY etc/php.ini /usr/local/etc/php/conf.d/custom.ini
 
-#Deps
+# Deps
 RUN apk add --no-cache \
     git \
     icu-libs \
@@ -24,12 +24,13 @@ RUN apk add --no-cache \
 # Yoink Composer from the Composer Image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Bereinigte Extensions & Docker-Layer Caching Optimierung
 RUN chmod +x /usr/bin/composer \
     && apk add --no-cache --virtual .build-deps \
-       g++ make autoconf linux-headers icu-dev imagemagick-dev libpng-dev jpeg-dev libzip-dev libxml2-dev \
+       g++ make autoconf linux-headers icu-dev imagemagick-dev libpng-dev jpeg-dev libzip-dev libxml2-dev pcre-dev \
     && docker-php-ext-configure zip \
     && docker-php-ext-configure gd --with-jpeg \
-    && docker-php-ext-install zip intl gd pdo pdo_mysql bcmath gd soap fileinfo intl\
+    && docker-php-ext-install zip intl gd pdo pdo_mysql bcmath soap fileinfo \
     && pecl download imagick \
     && tar -xzf imagick-*.tgz \
     && cd imagick-* \
@@ -39,9 +40,8 @@ RUN chmod +x /usr/bin/composer \
     && make install \
     && cd .. \
     && rm -rf imagick-* \
-    && docker-php-ext-enable imagick \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
+    && pecl install redis \
+    && docker-php-ext-enable imagick redis \
     && apk del .build-deps
 
 # project files
@@ -51,3 +51,23 @@ WORKDIR /app
 COPY composer.json composer.lock* /app/
 RUN composer install --no-interaction --optimize-autoloader
 COPY . /app
+
+# ==========================================
+# PROD STAGE
+# ==========================================
+FROM base AS prod
+# Keine Dev-Tools, kein Xdebug. Minimaler Footprint.
+
+# ==========================================
+# DEV STAGE
+# ==========================================
+FROM base AS dev
+# Installiere Xdebug für Development
+RUN apk add --no-cache --virtual .build-deps \
+       g++ make autoconf linux-headers pcre-dev \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del .build-deps
+
+# Dev-spezifische PHP.ini (Xdebug + Display Errors)
+COPY etc/php-dev.ini /usr/local/etc/php/conf.d/zzz-xdebug.ini

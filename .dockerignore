@@ -4,3 +4,5 @@ composer.lock
 .git
 .idea
 *.cache
+tests/
+public/

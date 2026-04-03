@@ -2,12 +2,18 @@
   "name": "pamo/compage",
   "description": "Docker PHP Project Skeleton",
   "version": "0.0.0",
+  "license": "MIT",
   "authors": [
     {
       "name": "Patrick Möller",
       "email": "info@pamo.dev",
       "homepage": "https://pamo.dev",
       "role": "Developer"
+    },
+    {
+      "name": "Gemini (AI Assistant)",
+      "email": "gemini@google.com",
+      "role": "The one and only G"
     }
   ],
   "autoload": {
@@ -18,24 +24,33 @@
   "require": {
     "php": "^8.4",
     "ext-pdo": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-redis": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^12.0.10",
+    "phpunit/phpunit": "^12.5.0",
     "phpstan/phpstan": "^2.1.11",
     "squizlabs/php_codesniffer": "4.0.*",
-    "friendsofphp/php-cs-fixer": "dev-master",
-    "bnf/phpstan-psr-container": "^1.0.1"
+    "friendsofphp/php-cs-fixer": "^3.9.4",
+    "bnf/phpstan-psr-container": "^1.0.1",
+    "mikey179/vfsstream": "^1.6"
   },
   "scripts": {
     "test": [
-      "@phpcs"
+      "@phpcs",
+      "@phpstan",
+      "@phpunit"
     ],
     "phpunit": "phpunit",
     "phpunit debug": "phpunit --debug -d display_startup_errors=on -d error_reporting=22527",
     "phpunit-upgrade-config": "phpunit --debug --migrate-configuration",
     "phpunit-coverage": "phpunit --coverage-html etc/logs/xdebug_coverage --configuration ./phpunit.xml",
-    "phpcs": "phpcs . -v --standard=PSR2,PSR12 --ignore=\"*/public/*,*/vendor/*,*/doc/*,*/config/*,*/etc/*,*.js,*.css,*.html\" --exclude=Generic.Files.LineLength",
-    "phpcbf": "phpcbf --standard=PSR12 --ignore=\"*/public/*,*/vendor/*,*/doc/*,*/config/*,*/etc/*,*.js,*.css,*.html\" --exclude=Generic.Files.LineLength ."
+    "phpunit-coverage-clover": "phpunit --coverage-clover etc/logs/coverage.xml --configuration ./phpunit.xml",
+    "phpunit-coverage-text": "phpunit --coverage-text --configuration ./phpunit.xml",
+    "phpunit-coverage-gaps": "phpunit --coverage-text --configuration ./phpunit.xml | grep -E '^(Compage\\\\|System\\\\|App\\\\|  Methods:)' | paste - - | grep -v '100.00%' | tr '\\t' '\\n'",
+    "phpunit-coverage-debug": "phpunit --coverage-html etc/logs/xdebug_coverage --configuration ./phpunit.xml --display-skipped  --debug",
+    "phpcs": "phpcs . -v --standard=PSR12 --ignore=\"*/public/*,*/vendor/*,*/doc/*,*/config/*,*/etc/*,*.js,*.css,*.html\" --exclude=Generic.Files.LineLength",
+    "phpcbf": "phpcbf -v --standard=PSR12 --ignore=\"*/public/*,*/vendor/*,*/doc/*,*/config/*,*/etc/*,*.js,*.css,*.html\" --exclude=Generic.Files.LineLength .",
+    "phpstan": "phpstan analyse --level 9 src tests"
   }
 }

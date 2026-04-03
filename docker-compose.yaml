@@ -17,6 +17,7 @@ services:
     build:
       context: ./
       dockerfile: ./etc/PhpAlpineDockerfile
+    pull_policy: build
     networks:
       - application-net
     volumes:
