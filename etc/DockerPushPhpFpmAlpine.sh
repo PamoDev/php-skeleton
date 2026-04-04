@@ -1,11 +1,10 @@
 #!/bin/sh
-set -e
 
-echo "Pushing Prod Images..."
-docker push pamodev/php-fpm-alpine:latest
-docker push pamodev/php-fpm-alpine:8.4
-
-echo "Pushing Dev Image..."
-docker push pamodev/php-fpm-alpine:dev
-
-echo "All images pushed successfully"
+git remote set-url --add --push origin git@github.com:PamoDev/php-skeleton.git
+git remote set-url --add --push origin git@gitlab.com:DeinUser/php-skeleton.git
+echo "Pushing Git Commits & Tags to all Remotes..."
+for remote in $(git remote); do
+    echo "-> Pushing to $remote..."
+    git push "$remote" HEAD
+    git push "$remote" --tags
+done
